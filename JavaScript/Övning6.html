@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hela Uppgiften: Övning 6 - Kundvagnen</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background-color: #f4f7f6;
+            color: #333;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .info-box {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        h1 { color: #2c3e50; margin-top: 0; }
+        h2 { color: #34495e; border-bottom: 2px solid #eee; padding-bottom: 5px; }
+        code { background-color: #eee; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+        
+        /* Styling för Nivå 2 & 3 när de skapar element */
+        #btn-visa {
+            padding: 12px 20px;
+            font-size: 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        #btn-visa:hover { background-color: #2980b9; }
+        
+        #produkt-lista {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+        #produkt-lista li {
+            background-color: #fff;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn-ta-bort {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-ta-bort:hover { background-color: #c0392b; }
+    </style>
+</head>
+<body>
+
+    <div class="info-box">
+        <h1>Övning 6 - Instruktioner & Vyer</h1>
+        <p><strong>Nivå 1:</strong> Löses i konsolen (F12 -> Console).</p>
+        <p><strong>Nivå 2:</strong> Klicka på knappen nedan för att skriva ut produkterna i listan på skärmen.</p>
+        <p><strong>Nivå 3:</strong> Lägg till en fungerande "Ta bort"-knapp för varje rad.</p>
+        
+        <hr>
+
+        <button id="btn-visa">Visa produkter</button>
+        <ul id="produkt-lista">
+            </ul>
+    </div>
+
+    <script>
+        // --- STARTDATA ---
+        const produkter = [
+            { id: 1, namn: "Kodnings-kaffemugg", pris: 149, kategori: "Merch" },
+            { id: 2, namn: "Mekaniskt Tangentbord", pris: 1299, kategori: "Hårdvara" },
+            { id: 3, namn: "Ergonomisk Mus", pris: 799, kategori: "Hårdvara" },
+            { id: 4, namn: "Klistermärke 'JS is King'", pris: 29, kategori: "Merch" },
+            { id: 5, namn: "Skärmrengöring", pris: 89, kategori: "Tillbehör" },
+            { id: 6, namn: "4K Webbkamera", pris: 1495, kategori: "Hårdvara" },
+            { id: 7, namn: "Stilren Musmatta (Stor)", pris: 249, kategori: "Tillbehör" },
+            { id: 8, namn: "Programmerar-hoodie", pris: 599, kategori: "Merch" },
+            { id: 9, namn: "USB-C Hub (6-i-1)", pris: 449, kategori: "Hårdvara" },
+            { id: 10, namn: "Blåljusglasögon", pris: 349, kategori: "Tillbehör" }
+        ];
+
+        // ==========================================================================
+        // KOD FÖR NIVÅ 1 (Skriv ut i konsolen)
+        // ==========================================================================
+        // 1. .filter() för Hårdvara:
+        
+        // 2. .map() för VERSALER:
+        
+        // 3. .reduce() för totalsumman:
+
+
+
+        // ==========================================================================
+        // KOD FÖR NIVÅ 2 (DOM-manipulation via knappen #btn-visa)
+        // ==========================================================================
+        // Tips: Hämta knappen och listan med document.querySelector().
+        // Lägg till en addEventListener('click', () => { ... }) på knappen.
+        // Loopa arrayen och använd document.createElement('li') för att bygga listan.
+
+
+
+        // ==========================================================================
+        // KOD FÖR NIVÅ 3 (Ta bort element med e.target)
+        // ==========================================================================
+        // Tips: När du skapar ditt <li>-element i Nivå 2, skapa samtidigt en knapp:
+        // const taBortKnapp = document.createElement('button');
+        // Ge den klassen taBortKnapp.classList.add('btn-ta-bort') för stilens skull.
+        // Lägg till addEventListener('click', (e) => { ... }) på den och använd e.target.
+        
+    </script>
+</body>
+</html>
