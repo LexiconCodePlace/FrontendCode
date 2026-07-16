@@ -70,7 +70,7 @@
                     </label>
                 </div>
                 <div style="display: flex; gap: 1rem;">
-                    <button type="submit" id="submit-btn" style="flex: 3;">Spara bil</button>
+                    <button type="button" id="submit-btn" onclick="createCar()" style="flex: 3;">Spara bil</button>
                     <button type="button" id="cancel-btn" class="secondary" style="flex: 1; display: none;">Avbryt</button>
                 </div>
             </form>
@@ -88,13 +88,32 @@
                 <p>Klicka på knappen för att ladda in bilar...</p>
             </div>
         </section>
+
+        <dialog id="messageDialog">
+            <article>
+                <h2 id="messageTitle">Confirm Your Membership</h2>
+                <p id="messageContent">
+                Thank you for signing up for a membership!
+                Please review the membership details below:
+                </p>
+                <ul id="messageValuesList">
+                <li>Membership: Individual</li>
+                <li>Price: $10</li>
+                </ul>
+                <footer>
+                <button type="button" class="secondary" onclick="hideDialog()">
+                    Stäng
+                </button>
+                </footer>
+            </article>
+        </dialog>
+
+        
     </main>
 
     <script>
         // 1. Inställningar (Anpassad till din HTTPS-port från Visual Studio)
         const API_URL = "https://localhost:7022/api/cars";
-
-        //event.preventDefault();
 
         // 2. DOM-referenser
         const loadBtn = document.querySelector('#load-btn');
@@ -107,22 +126,141 @@
 
         const showEditView = carId => document.querySelector(`#edit-view-${carId}`).className = "show-element";
         const hideEditView = carId => document.querySelector(`#edit-view-${carId}`).className = "hide-element";
+
+        const showDialog = (title, message, car) => {
+            const dialog = document.querySelector('#messageDialog');
+            const messageTitle = document.querySelector('#messageTitle');
+            const messageContent = document.querySelector('#messageContent');
+            const messageValuesList = document.querySelector('#messageValuesList');
+            messageValuesList.innerHTML = "";
+            messageTitle.innerHTML = title;
+            messageContent.innerHTML = message;
+
+            if(car != null){
+                const carId = document.createElement('li');
+                const carBrand = document.createElement('li');
+                const carModel = document.createElement('li');
+                const carYear = document.createElement('li');
+                const carColor = document.createElement('li');
+                carId.innerHTML = `Id: ${car.id}`;
+                carBrand.innerHTML = `Märke: ${car.brand}`;
+                carModel.innerHTML = `Model: ${car.model}`;
+                carYear.innerHTML = `År: ${car.year}`;
+                carColor.innerHTML = `Färg: ${car.color}`;
+
+                messageValuesList.appendChild(carId);
+                messageValuesList.appendChild(carBrand);
+                messageValuesList.appendChild(carModel);
+                messageValuesList.appendChild(carYear);
+                messageValuesList.appendChild(carColor);
+            }
+
+            dialog.showModal();
+        }
+
+        const hideDialog = () => {
+            const dialog = document.querySelector('#messageDialog');
+            //dialog.returnValue = ""; // Reset return value
+            dialog.close();
+        }
         
         // ==========================================
         // 🟢 DELETE (DELETE) - Radera en bil
         // ==========================================
         const deleteCar = async carId => {
-            const response = await fetch(`${API_URL}/${carId}`, {
-                method: 'DELETE'
-            });
-            const data = await response.json();
-            console.log("Statuskod:", response.status);
-            console.log("Svar från server:", data);
-            document.querySelector(`#car-card-${carId}`).remove();
-            // Kanske visa en ruta med bekräftelse här?
+            
+            try {
+                const response = await fetch(`${API_URL}/${carId}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+                console.log("Statuskod:", response.status);
+                console.log("Svar från server:", data);
+                document.querySelector(`#car-card-${carId}`).remove();
+                
+                showDialog("Bekräftelse", `Bilen med id ${carId} är borttagen`);
+            } catch (error) {
+                showDialog("Fel", `Det blev ett fel: ${error}`);
+            }
         }
         
-        console.log("Nu är vi här igen!");
+        // ==========================================
+        // 🟢 CREATE (POST) - Skapa en bil
+        // ==========================================
+        const createCar = async () => {
+            const brand = document.querySelector('#brand').value;
+            const model = document.querySelector('#model').value;
+            const yearText = document.querySelector('#year').value;
+            const color = document.querySelector('#color').value;
+            const year = parseInt(yearText);
+
+            if(Number.isInteger(year) == false){
+                showDialog("Fel", "Fältet år får endast innehålla nummer!");
+                return;
+            }
+            
+            const nyBil = {
+                brand: brand,
+                model: model,
+                year: year,
+                color: color
+            };
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(nyBil)
+                });
+                const data = await response.json();
+    
+                console.log("Statuskod:", response.status);
+                console.log("Skapad resurs:", data);
+                
+                showDialog("Bekräftelse", "Skapade bil med följande värden:", data);
+            } catch (error) {
+                showDialog("Fel", `Det blev ett fel:\n ${error}`);
+            }
+        }
+
+        // ==========================================
+        // 🟢 UPDATE (PUT) - Uppdatera en bil
+        // ==========================================
+        const updateCar = async carId => {
+            console.log("--- Skickar PUT för ID 1 ---");
+            const brand = document.querySelector(`#edit-brand-${carId}`).value;
+            const model = document.querySelector(`#edit-model-${carId}`).value;
+            const yearText = document.querySelector(`#edit-year-${carId}`).value;
+            const color = document.querySelector(`#edit-color-${carId}`).value;
+            const year = parseInt(yearText);
+
+            const car = {
+                id: carId, // ID måste matcha URL:en och databasen
+                brand: brand,
+                model: model,
+                year: year,
+                color: color
+            };
+            try {
+                const response = await fetch(`${API_URL}/${carId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(car)
+                });
+    
+                console.log("Statuskod (bör vara 204 No Content):", response.status);
+                
+                const carCardInfoDiv = document.querySelector(`#car-card-info-div-${car.id}`);
+                carCardInfoDiv.innerHTML=`
+                <strong>${car.brand} ${car.model}</strong> (${car.year}) <br>
+                <span style="font-size: 0.9rem; color: #777;">Färg: ${car.color}</span>
+                `;
+
+                showDialog("Bekräftelse", `Uppdaterade bilen med id ${carId} till följande egenskaper:`, car);
+            } catch (error) {
+                showDialog("Fel", `Det blev ett fel:\n ${error}`);
+            }
+        }
 
         // ==========================================
         // 🟢 READ (GET) - Hämta och visa alla bilar
@@ -152,7 +290,7 @@
                     card.id = `car-card-${car.id}`;
                     card.innerHTML = `
                         <div class="car-card">
-                            <div>
+                            <div id="car-card-info-div-${car.id}">
                                 <strong>${car.brand} ${car.model}</strong> (${car.year}) <br>
                                 <span style="font-size: 0.9rem; color: #777;">Färg: ${car.color}</span>
                             </div>
@@ -183,38 +321,13 @@
                                 </label>
                             </div>
                             <div style="display: flex; gap: 1rem;">
-                                <button type="button" id="submit-btn">Spara bil</button>
-                                <button type="button" id="cancel-btn" class="secondary" onClick="hideEditView(${car.id})">Avbryt</button>
+                                <button type="button" onClick="updateCar(${car.id})">Spara bil</button>
+                                <button type="button" class="secondary" onClick="hideEditView(${car.id})">Avbryt</button>
                             </div>
                         </div>
                     `;
                     carList.appendChild(card);
                 });
-/*
-                const showEditView = (carId) => {
-                    const editViewDiv = document.querySelector(`#edit-view-${carId}`);
-                    editViewDiv.className = "show-element";
-                };
-
-                // Loopa igenom bilarna och bygg HTML för varje kort
-                /*
-                cars.forEach(car => {
-                    const card = document.createElement('div');
-                    card.className = 'car-card';
-                    card.innerHTML = `
-                        <div>
-                            <strong>${car.brand} ${car.model}</strong> (${car.year}) <br>
-                            <span style="font-size: 0.9rem; color: #777;">Färg: ${car.color}</span>
-                        </div>
-                        <div class="btn-group">
-                            <button class="outline" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="prepareEdit(${JSON.stringify(car).replace(/"/g, '&quot;')})">Redigera</button>
-                            <button class="outline contrast" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="deleteCar(${car.id})">Ta bort</button>
-                        </div>
-                    `;
-                    carList.appendChild(card);
-                });
-                */
-
             } catch (error) {
                 console.error("Fel:", error);
                 carList.innerHTML = `<p style="color: red;">Kunde inte hämta bilar. Körs ditt API på ${API_URL}?</p>`;
@@ -223,14 +336,6 @@
 
         // Event listener för ladda-knappen
         loadBtn.addEventListener('click', fetchCars);
-
-
-        
-
-        
-
-
-        
 
     </script>
 </body>
